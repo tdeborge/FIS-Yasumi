@@ -75,7 +75,7 @@ In the AMQ/Fuse console, you will find the following queues created:
 * qa.test.yasumi.puzzlebox.start
 * qa.test.yasumi.start
 
-** Reaching this step, and all items created, you are ready to move to the next step (Making the services work)
+** Reaching this step, and all items created, you are ready to move to the next step (Making the services work)**
 
 ## The Application
 
