@@ -1,6 +1,6 @@
 # FIS-Yasumi
 
-![alt text](https://github.com/tdeborge/FIS-Yasumi/raw/master/src/common/images/pieces.png "Logo Title Text 1")
+![alt text](https://github.com/tdeborge/FIS-Yasumi/blob/master/src/site/images/pieces.png "Logo Title Text 1")
 
 ## Introduction
 ==========
@@ -17,3 +17,4 @@ Calculating a Yasumi Puzzle solution in the could
 Introduction
 
 this is the texts of the introduction
+
