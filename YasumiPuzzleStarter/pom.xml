@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<artifactId>FISYasumi</artifactId>
+		<groupId>com.rhworkshop.msa</groupId>
+		<version>1.0.0-SNAPSHOT</version>
+	</parent>
+	<artifactId>YasumiPuzzleStarter</artifactId>
+	<packaging>bundle</packaging>
+	<name>Puzzle Starter</name>
+	<description>Service that accepts the request to start a puzzle solution and instantiates the needed messages to kick the solution process into gears</description>
+
+	<properties>
+
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-blueprint</artifactId>
+		</dependency>
+
+		<!-- Karaf microcontainer dependencies -->
+		<dependency>
+			<!-- scope is compile so all features (there is only one) are installed into startup.properties, and the feature repo itself is not added in etc/org.apache.karaf.features.cfg file -->
+			<groupId>org.jboss.fuse</groupId>
+			<artifactId>fuse-karaf-framework</artifactId>
+			<type>kar</type>
+			<!-- no need to download kar dependencies -->
+			<exclusions>
+				<exclusion>
+					<groupId>*</groupId>
+					<artifactId>*</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>io.fabric8</groupId>
+			<artifactId>fabric8-karaf-features</artifactId>
+			<classifier>features</classifier>
+			<type>xml</type>
+		</dependency>
+
+		<!-- testing -->
+		<dependency>
+			<groupId>org.jboss.arquillian.junit</groupId>
+			<artifactId>arquillian-junit-container</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.fabric8</groupId>
+			<artifactId>fabric8-arquillian</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+	</dependencies>
+
+
+</project>
