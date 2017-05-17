@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0             https://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd                   http://camel.apache.org/schema/blueprint http://camel.apache.org/schema/blueprint/camel-blueprint.xsd">
+    <cm:property-placeholder id="yasumipuzzleboxhandler" persistent-id="com.rhworkshop.msa.yasumipuzzleboxhandler" update-strategy="reload" >
+        <cm:default-properties>
+            <cm:property name="Puzzler.Start.Destination" value="localhost.test.yasumi.start"/>
+            <cm:property name="Puzzler.Stop.Destination" value="localhost.test.yasumi.stop"/>
+            <cm:property name="Puzzler.PuzzleBox.Destination" value="localhost.test.yasumi.puzzlebox.start"/>
+            <cm:property name="Puzzler.Forward.Destination" value="localhost.test.yasumi.forwardEntry"/>
+            <cm:property name="Puzzler.amq.BrokerURL" value="tcp://localhost:61616"/>
+            <cm:property name="Puzzler.amq.Username" value="admin"/>
+            <cm:property name="Puzzler.amq.Password" value="admin"/>
+            <cm:property name="Puzzler.TestMessage" value="LOCALHOST PUZZLER TESTING"/>
+            <cm:property name="Puzzler.amq.tuning.maxConnections" value="5"/>
+            <cm:property name="Puzzler.amq.tuning.maximumActiveSessionPerConnection" value="50"/>
+            <cm:property name="Puzzler.amq.tuning.concurrentConsumers" value="2"/>
+        </cm:default-properties>
+    </cm:property-placeholder>
+    <bean class="org.apache.activemq.ActiveMQConnectionFactory" id="box.jmsConnectionFactory">
+        <property name="brokerURL" value="${Puzzler.amq.BrokerURL}"/>
+        <property name="userName" value="${Puzzler.amq.Username}"/>
+        <property name="password" value="${Puzzler.amq.Password}"/>
+        <property name="trustAllPackages" value="true"/>
+    </bean>
+    <bean class="org.apache.activemq.pool.PooledConnectionFactory" id="box.pooledConnectionFactory">
+        <property name="maxConnections" value="${Puzzler.amq.tuning.maxConnections}"/>
+        <property name="maximumActiveSessionPerConnection" value="${Puzzler.amq.tuning.maximumActiveSessionPerConnection}"/>
+        <property name="connectionFactory" ref="box.jmsConnectionFactory"/>
+    </bean>
+    <bean class="org.apache.camel.component.jms.JmsConfiguration" id="box.jmsConfig">
+        <property name="connectionFactory" ref="box.pooledConnectionFactory"/>
+        <property name="concurrentConsumers" value="${Puzzler.amq.tuning.concurrentConsumers}"/>
+    </bean>
+    <bean class="org.apache.activemq.camel.component.ActiveMQComponent" id="box.PuzzlerJMSConnection">
+        <property name="configuration" ref="box.jmsConfig"/>
+    </bean>
+    <bean class="com.rhworkshop.msa.processors.PuzzleBoxInitHandler" id="PuzzleBoxInitHandler"/>
+    <!-- <bean class="com.rhworkshop.msa.processors.MessageProducingProcessor" id="MessageProducingProcessor"/> <bean class="com.rhworkshop.msa.aggregators.PuzzleBoxAggregator" id="PuzzleBoxAggregator"/> -->
+    <camelContext id="FuseYasumiBoxPuzzler" trace="false" xmlns="http://camel.apache.org/schema/blueprint">
+        <route id="PuzzleBox Handler">
+            <from id="JMSPuzzleBoxStarter" uri="box.PuzzlerJMSConnection:queue:{{Puzzler.PuzzleBox.Destination}}"/>
+            <log id="PuzzleBoxLogger" loggingLevel="DEBUG" message="PuzzleBox Received: ${body}"/>
+            <process id="ProcessInitBoxes" ref="PuzzleBoxInitHandler"/>
+            <log id="PuzzleBoxLogger1" loggingLevel="DEBUG" message="MessageINIT: ${header.validMessage}"/>
+            <choice id="_choice1">
+                <when id="_when1">
+                    <simple>${header.validMessage} == true</simple>
+                    <setHeader headerName="puzzledepth" id="_setHeader1">
+                        <simple resultType="java.lang.Integer">1</simple>
+                        <!-- <constant>1</constant> -->
+                    </setHeader>
+                    <to id="ForwardToJMSHandler" uri="box.PuzzlerJMSConnection:queue:{{Puzzler.Forward.Destination}}?timeToLive=300000&amp;deliveryMode=0"/>
+                </when>
+                <otherwise id="_otherwise1">
+                    <log id="_log1" loggingLevel="DEBUG" message="message is not validated ... not forwarding"/>
+                </otherwise>
+            </choice>
+            <to id="mock1" uri="mock:catchMessage"/>
+        </route>
+    </camelContext>
+</blueprint>

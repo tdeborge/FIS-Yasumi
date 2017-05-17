@@ -203,5 +203,7 @@
 	</build>
 	<modules>
 		<module>YasumiPuzzleStarter</module>
+		<module>YasumiPuzzleBox</module>
+		<module>YasumiPuzzleCalculator</module>
 	</modules>
 </project>

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0             https://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd                   http://camel.apache.org/schema/blueprint http://camel.apache.org/schema/blueprint/camel-blueprint.xsd">
+    <cm:property-placeholder id="yasumipuzzleboxcalculator" persistent-id="com.rhworkshop.msa.yasumipuzzleboxcalculator" update-strategy="reload">
+        <cm:default-properties>
+            <cm:property name="Puzzler.Start.Destination" value="localhost.test.yasumi.start"/>
+            <cm:property name="Puzzler.Stop.Destination" value="localhost.test.yasumi.stop"/>
+            <cm:property name="Puzzler.PuzzleBox.Destination" value="localhost.test.yasumi.puzzlebox.start"/>
+            <cm:property name="Puzzler.Forward.Destination" value="localhost.test.yasumi.forwardEntry"/>
+            <cm:property name="Puzzler.Solution.Destination" value="localhost.test.yasumi.solutionEntry"/>
+            <cm:property name="Puzzler.Process.Tuning.SplitLevel" value="3"/>
+            <cm:property name="Puzzler.Process.Tuning.BucketSize" value="200"/>
+            <cm:property name="Puzzler.Process.Tuning.ComputeLevel" value="3"/>
+            <cm:property name="Puzzler.Process.Tuning.StopLevel" value="5"/>
+            <cm:property name="Puzzler.amq.BrokerURL" value="tcp://localhost:61616"/>
+            <cm:property name="Puzzler.amq.Username" value="admin"/>
+            <cm:property name="Puzzler.amq.Password" value="admin"/>
+            <cm:property name="Puzzler.TestMessage" value="LOCALHOST PUZZLER TESTING"/>
+            <cm:property name="Puzzler.amq.tuning.maxConnections" value="1"/>
+            <cm:property name="Puzzler.amq.tuning.maximumActiveSessionPerConnection" value="50"/>
+            <cm:property name="Puzzler.amq.tuning.concurrentConsumers" value="10"/>
+        </cm:default-properties>
+    </cm:property-placeholder>
+    <bean class="org.apache.activemq.ActiveMQConnectionFactory" id="calc.jmsConnectionFactory">
+        <property name="brokerURL" value="${Puzzler.amq.BrokerURL}"/>
+        <property name="userName" value="${Puzzler.amq.Username}"/>
+        <property name="password" value="${Puzzler.amq.Password}"/>
+        <property name="trustAllPackages" value="true"/>
+    </bean>
+    <bean class="org.apache.activemq.pool.PooledConnectionFactory" id="calc.pooledConnectionFactory">
+        <property name="maxConnections" value="${Puzzler.amq.tuning.maxConnections}"/>
+        <property name="maximumActiveSessionPerConnection" value="${Puzzler.amq.tuning.maximumActiveSessionPerConnection}"/>
+        <property name="connectionFactory" ref="calc.jmsConnectionFactory"/>
+    </bean>
+    <bean class="org.apache.camel.component.jms.JmsConfiguration" id="calc.jmsConfig">
+        <property name="connectionFactory" ref="calc.pooledConnectionFactory"/>
+        <property name="concurrentConsumers" value="${Puzzler.amq.tuning.concurrentConsumers}"/>
+        <!-- <property name="mapJmsMessage" value="false"></property> -->
+    </bean>
+    <bean class="org.apache.activemq.camel.component.ActiveMQComponent" id="calc.PuzzlerJMSConnection">
+        <property name="configuration" ref="calc.jmsConfig"/>
+    </bean>
+    <bean class="com.rhworkshop.msa.processors.PuzzleGridLogger" id="PuzzleGridLogger"/>
+    <bean class="com.rhworkshop.msa.processors.PuzzleSolverForwarder" id="PuzzleSolverForwarder"/>
+    <bean class="com.rhworkshop.msa.aggregators.PuzzleBoxCalculatorAggregator" id="PuzzleBoxCalculatorAggregator"/>
+    <!-- <bean class="com.rhworkshop.msa.processors.MessageProducingProcessor" id="MessageProducingProcessor"/> <bean class="com.rhworkshop.msa.aggregators.PuzzleBoxAggregator" id="PuzzleBoxAggregator"/> -->
+    <camelContext id="FuseYasumiCalculatorPuzzler" trace="false" xmlns="http://camel.apache.org/schema/blueprint">
+        <route id="PuzzleBox Calculator">
+            <!-- <log loggingLevel="DEBUG" id="PuzzleBoxCalculatorLogger" message="PuzzleBox Received: ${body.size}"/> -->
+            <!-- <process id="_process1" ref="PuzzleGridLogger"/> -->
+            <from id="JMSPuzzleBoxSCalculator" uri="calc.PuzzlerJMSConnection:queue:{{Puzzler.Forward.Destination}}"/>
+            <to id="_to1" pattern="InOnly" uri="direct:ProcessIncomingPuzzleBoxes"/>
+        </route>
+        <route id="BoxProcessor">
+            <!-- <to uri="log:message=TESTING"/> -->
+            <!-- <log loggingLevel="DEBUG" id="_log1" message="puzzledepth = ${header.puzzledepth} and id ${exchangeId}" /> -->
+            <from id="BoxProccorRoute" uri="direct:ProcessIncomingPuzzleBoxes"/>
+            <process id="PuzzleBoxSolver" ref="PuzzleSolverForwarder"/>
+            <setHeader headerName="Puzzler.Process.Tuning.BucketSize" id="_setHeader1">
+                <constant>{{Puzzler.Process.Tuning.BucketSize}}</constant>
+            </setHeader>
+            <setHeader headerName="Puzzler.Process.Tuning.ComputeLevel" id="_setHeader2">
+                <constant>{{Puzzler.Process.Tuning.ComputeLevel}}</constant>
+            </setHeader>
+            <to id="mock1" uri="mock:catchMessage"/>
+            <choice id="_choice1">
+                <when id="_when1">
+                    <simple>${header.puzzledepth} &lt; {{Puzzler.Process.Tuning.SplitLevel}}</simple>
+                    <log id="_log2" loggingLevel="DEBUG" message="NEED TO SPLIT THE MESSAGE"/>
+                    <split id="_split1">
+                        <simple>${body}</simple>
+                        <to id="ForwardToJMSArrayHandler" pattern="InOnly" uri="calc.PuzzlerJMSConnection:queue:{{Puzzler.Forward.Destination}}?timeToLive=300000&amp;deliveryMode=0"/>
+                        <to id="mock2" uri="mock:catchSplit"/>
+                    </split>
+                </when>
+                <when id="_when2">
+                    <simple>${header.puzzledepth} &gt; {{Puzzler.Process.Tuning.StopLevel}}</simple>
+                    <log id="_log4" loggingLevel="DEBUG" message="Stopping the flow ${body.size} - ${header.PuzzleUnit} - ${header.PuzzleDepth}"/>
+                    <to id="Forward to Solutions" uri="calc.PuzzlerJMSConnection:queue:{{Puzzler.Solution.Destination}}?timeToLive=300000&amp;deliveryMode=0"/>
+                </when>
+                <when id="_when3">
+                    <simple>${header.BucketOverflow} == true</simple>
+                    <log id="_log5" loggingLevel="DEBUG" message="Bucket did overflow ... need to send split message"/>
+                    <split id="_split2">
+                        <simple>${body}</simple>
+                        <to id="ForwardToJMSArrayHandler" pattern="InOnly" uri="calc.PuzzlerJMSConnection:queue:{{Puzzler.Forward.Destination}}?timeToLive=300000&amp;deliveryMode=0"/>
+                        <to id="mock2" uri="mock:catchSplit"/>
+                    </split>
+                </when>
+                <otherwise id="_otherwise1">
+                    <log id="_log3" loggingLevel="DEBUG" message="NEED TO FORWARD THE MESSAGE"/>
+                    <to id="ForwardToJMSArrayHandler" pattern="InOnly" uri="calc.PuzzlerJMSConnection:queue:{{Puzzler.Forward.Destination}}?timeToLive=300000&amp;deliveryMode=0"/>
+                    <to id="mock3" uri="mock:catchForward"/>
+                </otherwise>
+            </choice>
+        </route>
+        <!-- <route id="Solution Aggregator"> <log loggingLevel="DEBUG" id="SolutionLogger" message="Solution Received with depth:${body.depth} and last message = ${header.lastmessage}"/> <from id="SolutionCollector" uri="seda:SolutionCollector?concurrentConsumers=10"/> <aggregate id="PuzzleCalculatorAggregator" strategyRef="PuzzleBoxCalculatorAggregator"> 
+			<correlationExpression> <simple>${body.puzzleUnit}</simple> </correlationExpression> <completionPredicate> <simple/> <simple>${header.lastmessage} == true</simple> </completionPredicate> <completionTimeout> <constant>200</constant> </completionTimeout> <completionSize> <constant>200</constant> </completionSize> 
+			<log loggingLevel="DEBUG" id="PuzzleConsolidatorLogger" message="CONSOLIDATED: ${body.size}"/> <to id="ForwardToJMSArrayHandler" pattern="InOnly" uri="calc.PuzzlerJMSConnection:queue:{{Puzzler.Forward.Destination}}?timeToLive=300000&amp;deliveryMode=0"/> <to id="mock1" uri="mock:catchMessage"/> </aggregate> </route> <route 
+			id="Solution Forwarder"> <from id="Solution Forward input" uri="seda:SolutionForwarder"/> <to id="ForwardToJMSPuzzleSolution" pattern="InOnly" uri="calc.PuzzlerJMSConnection:queue:{{Puzzler.Solution.Destination}}?timeToLive=300000&amp;deliveryMode=0"/> </route> -->
+    </camelContext>
+</blueprint>

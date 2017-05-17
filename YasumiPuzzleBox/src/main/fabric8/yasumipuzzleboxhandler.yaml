@@ -1,9 +1,9 @@
 kind: ConfigMap
 apiVersion: v1
 metadata:
-  name: yasumipuzzler
+  name: yasumipuzzleboxhandler
   labels:
-    karaf.pid: com.rhworkshop.msa.YasumiPuzzler
+    karaf.pid: com.rhworkshop.msa.yasumipuzzleboxhandler
 
 data:
   Puzzler.Start.Destination: qa.test.yasumi.start
@@ -15,7 +15,6 @@ data:
   Puzzler.amq.Username: admin
   Puzzler.amq.Password: admin
   Puzzler.TestMessage: QA PUZZLER TESTING
-  
-  Puzzler.amq.tuning.maxConnections: '5'
+  Puzzler.amq.tuning.maxConnections: '1'
   Puzzler.amq.tuning.maximumActiveSessionPerConnectione: '50'
-  Puzzler.amq.tuning.concurrentConsumers: '1'
+  Puzzler.amq.tuning.concurrentConsumers: '10'
