@@ -23,13 +23,13 @@ This environment will need the following items
 
 ## Getting Started
 
-Clone/Fork the repository using the browser or on the commandline:
+* Clone/Fork the repository using the browser or on the commandline:
 
 **git clone https://github.com/tdeborge/FIS-Yasumi.git**
 
-Then position yourself in the directory and modify the following files:
-
 ---
+
+* Then position yourself in the directory and modify the following files:
 
 **YasumiPuzzleStarter/src/main/fabric8/yasumipuzzler.yaml**
 
@@ -39,8 +39,18 @@ Then position yourself in the directory and modify the following files:
 
 ---
 
-In these files, you find reference to the AMQ Broker URL your services need to connect to - so please adjust this to your AMQ environment:
+* In these files, you find reference to the AMQ Broker URL your services need to connect to - so please adjust this to your AMQ environment:
 
 ```
 Puzzler.amq.BrokerURL: tcp://192.168.2.71:61616
 ```
+
+---
+
+* Edit the configureCDK.sh file so it reflects to the environment you want to setup. The script is handling the following:
+
+1. Setup of a new project in the OCP environment
+1. Adding the FIS images to the environment
+1. Adding a default View Policy
+1. Uploading the ConfigMaps that hold all environment variables into the project
+1. When java/maven/repos are configured correctly on your system, it will deploy the pods in the environment.

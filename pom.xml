@@ -205,6 +205,6 @@
 		<module>YasumiPuzzleStarter</module>
 		<module>YasumiPuzzleBox</module>
 		<module>YasumiPuzzleCalculator</module>
-		<module>GuiScaleOut</module>
+		
 	</modules>
 </project>
