@@ -79,5 +79,37 @@ In the AMQ/Fuse console, you will find the following queues created:
 
 ## The Application
 
+In the cloned environment, open the file:
+
+**FISGuiScaleOut/src/main/resources/resources/block.properties**
+
+In this file, you will be able to insert the BROKERURL for your AMQ connection. Also make sure that the entry queue definition is the same as the definition in the YasumyPuzzleStarter setting.
+
+	blocks.jms.username				= admin
+	blocks.jms.password				= admin
+	blocks.jms.url					= tcp://localhost:61616
+	blocks.jms.destination			= qa.test.yasumi.start
+
+**Build the application**
+
+	mvn clean install
+	
+**Run the applictation**
+
+in the target directory:
+
+    java -jar FISGuiScaleOut-1.0.0-SNAPSHOT-jar-with-dependencies.jar
+
+![alt text](https://github.com/tdeborge/FIS-Yasumi/blob/master/src/site/images/blockguiinit.png "Init state of puzzler")
+
+**Click on the 'New Interactive' Button** to send a start message to the Broker. The application will create a Temporary Queue to retrieve the results and close it when all solutions are received.
+
+![alt text](https://github.com/tdeborge/FIS-Yasumi/blob/master/src/site/images/tempqueueview.png "Temporary Queue View")
+
+At the end, you can scroll through the solutions that were found.
+
+![alt text](https://github.com/tdeborge/FIS-Yasumi/blob/master/src/site/images/blockguisolution.png "blockguisolution")
+
+
 
 

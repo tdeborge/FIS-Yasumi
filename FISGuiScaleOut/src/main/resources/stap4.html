@@ -1,0 +1,25 @@
+<html>
+<head>
+<title>Introduction to the Dutch Blend Challenge</title>
+</head>
+<body>
+<H1><center>The Challenge</center></H1>
+<font size="6">
+<p><u><b>Optimizations:</b></u></p>
+<p>It is clear that in order to make the program faster, you need to find a way
+to reduce the number of calculations you are going to make. If you use <b>Brute Force</b> there
+seem to be over 60 milion possibilities to place the blocks on the grid. </p>
+<p>
+<u><b>First optimization ... Whitespace counting:</b></u><br></p>
+<p>
+One of the interesting observations to be made is that every block you place on the grid will cover 5 cells 
+of the grid. That means that if you count the number of free consecutive blocks, it must be able to be divided by 5. 
+If this is not the case, it will never fit all the blocks. Implementing this can save you a lot of calculations on a grid
+that will never have a solution.</p>
+<p>
+<b>This is the optimization that Jan Sipke explained on his website and implemented in his code.</b>
+<br><br>Hereby I would like to thank Jan Sipke for his information on the web.
+</p>
+</font>
+</body>
+</html>
