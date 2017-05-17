@@ -54,3 +54,30 @@ Puzzler.amq.BrokerURL: tcp://192.168.2.71:61616
 1. Adding a default View Policy
 1. Uploading the ConfigMaps that hold all environment variables into the project
 1. When java/maven/repos are configured correctly on your system, it will deploy the pods in the environment.
+
+** Validation
+
+Once the script is finished, you can validate the following:
+
+![alt text](https://github.com/tdeborge/FIS-Yasumi/blob/master/src/site/images/ocppods.png "OpenShift Console View")
+
+There should be 3 Services deployed
+
+* yasumipuzzlestarter
+* yasumipuzzlebox
+* yasumipuzzlecalculator (with 2 pods)
+
+![alt text](https://github.com/tdeborge/FIS-Yasumi/blob/master/src/site/images/amqView.png "AMQ Queue Creation")
+
+In the AMQ/Fuse console, you will find the following queues created:
+
+* qa.test.yasumi.forwardEntry
+* qa.test.yasumi.puzzlebox.start
+* qa.test.yasumi.start
+
+** Reaching this step, and all items created, you are ready to move to the next step (Making the services work)
+
+## The Application
+
+
+
