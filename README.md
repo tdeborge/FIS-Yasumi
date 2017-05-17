@@ -13,13 +13,34 @@ I then took the program and created some Fuse Services around it and ported that
 
 ![alt text](https://github.com/tdeborge/FIS-Yasumi/blob/master/src/site/images/solutionarchitecture.png "Scale-out image")
 
-## Getting the code
-========
+## Pre-Requisites
 
+This environment will need the following items
 
-Calculating a Yasumi Puzzle solution in the could
+* CDK 2.4 (this is what is tested ... you can see how it works on your OCP environment)
+* An installation of Fuse/AMQ. The Message Broker is used to glue all services together and is not included in this project
+* Make the Broker available on 0.0.0.0:[port#]
 
-Introduction
+## Getting Started
 
-this is the texts of the introduction
+Clone/Fork the repository using the browser or on the commandline:
 
+**git clone https://github.com/tdeborge/FIS-Yasumi.git**
+
+Then position yourself in the directory and modify the following files:
+
+---
+
+**YasumiPuzzleStarter/src/main/fabric8/yasumipuzzler.yaml**
+
+**YasumiPuzzleBox/src/main/fabric8/yasumipuzzleboxhandler.yaml**
+
+**YasumiPuzzleCalculator/src/main/fabric8/yasumipuzzleboxcalculator.yaml**
+
+---
+
+In these files, you find reference to the AMQ Broker URL your services need to connect to - so please adjust this to your AMQ environment:
+
+```
+Puzzler.amq.BrokerURL: tcp://192.168.2.71:61616
+```
