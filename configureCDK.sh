@@ -26,3 +26,13 @@ echo Adding the Deployment Files
 oc create -f YasumiPuzzleStarter/src/main/fabric8/yasumipuzzler.yaml
 oc create -f YasumiPuzzleBox/src/main/fabric8/yasumipuzzleboxhandler.yaml
 oc create -f YasumiPuzzleCalculator/src/main/fabric8/yasumipuzzleboxcalculator.yaml
+
+#Make sure java and maven are in your classpath!!!!
+echo deploying the PuzzleStarter
+mvn -f YasumiPuzzleStarter/pom.xml clean fabric8:deploy
+
+echo deploying the PuzzleBox
+mvn -f YasumiPuzzleBox/pom.xml clean fabric8:deploy
+
+echo deploying the PuzzleCalculator
+mvn -f YasumiPuzzleCalculator/pom.xml clean fabric8:deploy
