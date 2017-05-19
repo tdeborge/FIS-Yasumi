@@ -11,9 +11,9 @@ data:
   Puzzler.PuzzleBox.Destination: qa.test.yasumi.puzzlebox.start
   Puzzler.Forward.Destination: qa.test.yasumi.forwardEntry
   Puzzler.Solution.Destination: qa.test.yasumi.solutionEntry
-  Puzzler.amq.BrokerURL: tcp://192.168.2.71:61616
+  Puzzler.amq.BrokerURL: tcp://broker-amq-tcp:61616
   Puzzler.amq.Username: admin
-  Puzzler.amq.Password: admin
+  Puzzler.amq.Password: change12_me
   Puzzler.TestMessage: QA PUZZLER TESTING
   Puzzler.amq.tuning.maxConnections: '1'
   Puzzler.amq.tuning.maximumActiveSessionPerConnectione: '50'
