@@ -5,7 +5,7 @@ echo "Setting OpenShift IP address to ${OCP_IP}"
 sed -i s/TODO_SPECIFY_IP/${OCP_IP}/ ./YasumiPuzzleBox/src/main/fabric8/yasumipuzzleboxhandler.yaml ./YasumiPuzzleStarter/src/main/fabric8/yasumipuzzler.yaml ./YasumiPuzzleCalculator/src/main/fabric8/yasumipuzzleboxcalculator.yaml
 
 echo Login to Openshift as 'Admin'
-oc login -u admin -p admin ${OCP_IP}.3:8443
+oc login -u admin -p admin ${OCP_IP}:8443
 
 echo Make sure we are in the 'openshift' project
 oc project openshift
