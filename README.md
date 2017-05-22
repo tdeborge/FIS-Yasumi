@@ -29,25 +29,21 @@ This environment will need the following items
 
 ---
 
-* Then position yourself in the directory and modify the following files:
+* Then modify the following file:
 
-**YasumiPuzzleStarter/src/main/fabric8/yasumipuzzler.yaml**
-
-**YasumiPuzzleBox/src/main/fabric8/yasumipuzzleboxhandler.yaml**
-
-**YasumiPuzzleCalculator/src/main/fabric8/yasumipuzzleboxcalculator.yaml**
+**configureCDK.sh**
 
 ---
 
-* In these files, you find reference to the AMQ Broker URL your services need to connect to - so please adjust this to your AMQ environment:
+* In this file, you find reference to the OpenShift IP address your services need to connect to -- so please adjust this:
 
 ```
-Puzzler.amq.BrokerURL: tcp://192.168.2.71:61616
+OCP_IP=192.168.2.71
 ```
 
 ---
 
-* Edit the configureCDK.sh file so it reflects to the environment you want to setup. The script is handling the following:
+* Edit the configureCDK.sh file so it reflects the environment you want to setup. The script is handling the following:
 
 1. Setup of a new project in the OCP environment
 1. Adding the FIS images to the environment
