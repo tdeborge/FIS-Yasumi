@@ -1,5 +1,9 @@
 #!/bin/sh
 
+OCP_IP=192.168.2.71
+echo "Setting OpenShift IP address to ${OCP_IP}"
+sed -i s/TODO_SPECIFY_IP/${OCP_IP}/ ./YasumiPuzzleBox/src/main/fabric8/yasumipuzzleboxhandler.yaml ./YasumiPuzzleStarter/src/main/fabric8/yasumipuzzler.yaml ./YasumiPuzzleCalculator/src/main/fabric8/yasumipuzzleboxcalculator.yaml
+
 echo Creating the Project FIS-YasumiPuzzler
 oc new-project yasumi --display-name="Yasumi Puzzler" --description="Yasumi Puzzle Solver Project"
 
