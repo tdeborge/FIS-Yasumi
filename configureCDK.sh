@@ -1,3 +1,5 @@
+#!/bin/sh
+
 echo Creating the Project FIS-YasumiPuzzler
 oc new-project yasumi --display-name="Yasumi Puzzler" --description="Yasumi Puzzle Solver Project"
 
