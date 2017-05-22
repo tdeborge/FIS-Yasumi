@@ -1,5 +1,8 @@
-echo Creating the Project FIS-YasumiPuzzler
-oc new-project yasumi --display-name="Yasumi Puzzler" --description="Yasumi Puzzle Solver Project"
+echo Login to Openshift as 'Admin'
+oc login -u admin -p admin 192.168.64.3:8443
+
+echo Make sure we are in the 'openshift' project
+oc project openshift
 
 echo Adding the FIS templates
 BASEURL=https://raw.githubusercontent.com/jboss-fuse/application-templates/GA
@@ -21,6 +24,22 @@ oc replace --force -n openshift -f ${BASEURL}/quickstarts/spring-boot-cxf-jaxws-
 
 echo Adding the policy rule
 oc policy add-role-to-user view --serviceaccount=default
+
+echo Install JBoss A-MQ templates
+oc create -f amq62-exposed.json
+
+echo Switch to other user
+oc login -u openshift-dev -p devel
+
+echo Creating the Project FIS-YasumiPuzzler
+oc new-project yasumi --display-name="Yasumi Puzzler" --description="Yasumi Puzzle Solver Project"
+
+echo Define artifacts for A-MQ and deploy it as service on Openshift
+oc create -f amq-app-secret.json
+oc policy add-role-to-user view system:serviceaccount:yasumi:default
+oc policy add-role-to-user view system:serviceaccount:yasumi:amq-service-account
+oc new-app amq62-exposed -p MQ_USERNAME="admin" -p MQ_PASSWORD="change12_me"
+oc expose service broker-amq-tcp
 
 echo Adding the Deployment Files
 oc create -f YasumiPuzzleStarter/src/main/fabric8/yasumipuzzler.yaml
