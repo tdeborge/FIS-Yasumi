@@ -201,10 +201,10 @@
 
 		</plugins>
 	</build>
-<!-- 	<modules>
+<modules>
 		<module>YasumiPuzzleStarter</module>
-		<module>YasumiPuzzleBox</module>
-		<module>YasumiPuzzleCalculator</module>
+<!-- 		<module>YasumiPuzzleBox</module>
+		<module>YasumiPuzzleCalculator</module> -->
 		
-	</modules> -->
+	</modules>
 </project>
