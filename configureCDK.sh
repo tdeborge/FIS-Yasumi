@@ -1,8 +1,9 @@
 #!/bin/sh
 
-OCP_IP=192.168.2.71
+OCP_IP=192.168.64.2
 echo "Setting OpenShift IP address to ${OCP_IP}"
-sed -i s/TODO_SPECIFY_IP/${OCP_IP}/ ./YasumiPuzzleBox/src/main/fabric8/yasumipuzzleboxhandler.yaml ./YasumiPuzzleStarter/src/main/fabric8/yasumipuzzler.yaml ./YasumiPuzzleCalculator/src/main/fabric8/yasumipuzzleboxcalculator.yaml
+#I think this line became obsolete once AMQ is also deployed into the OCP environment. This allows for having static referal to the correct Rout URL.
+#sed -i s/TODO_SPECIFY_IP/${OCP_IP}/ ./YasumiPuzzleBox/src/main/fabric8/yasumipuzzleboxhandler.yaml ./YasumiPuzzleStarter/src/main/fabric8/yasumipuzzler.yaml ./YasumiPuzzleCalculator/src/main/fabric8/yasumipuzzleboxcalculator.yaml
 
 echo Login to Openshift as 'Admin'
 oc login -u admin -p admin ${OCP_IP}:8443
@@ -32,7 +33,7 @@ echo Adding the policy rule
 oc policy add-role-to-user view --serviceaccount=default
 
 echo Install JBoss A-MQ templates
-oc create -f amq62-exposed.json
+oc create -f AMQ/amq62-exposed.json
 
 echo Switch to other user
 oc login -u openshift-dev -p devel
@@ -41,10 +42,10 @@ echo Creating the Project FIS-YasumiPuzzler
 oc new-project yasumi --display-name="Yasumi Puzzler" --description="Yasumi Puzzle Solver Project"
 
 echo Define artifacts for A-MQ and deploy it as service on Openshift
-oc create -f amq-app-secret.json
+oc create -f AMQ/amq-app-secret.json
 oc policy add-role-to-user view system:serviceaccount:yasumi:default
 oc policy add-role-to-user view system:serviceaccount:yasumi:amq-service-account
-oc new-app amq62-exposed -p MQ_USERNAME="admin" -p MQ_PASSWORD="change12_me"
+oc new-app yasumi-amq -p MQ_USERNAME="admin" -p MQ_PASSWORD="change12_me"
 oc expose service broker-amq-tcp
 
 echo Adding the Deployment Files

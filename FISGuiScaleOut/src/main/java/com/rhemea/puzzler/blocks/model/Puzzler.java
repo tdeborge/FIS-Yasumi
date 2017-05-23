@@ -131,8 +131,11 @@ public class Puzzler implements Runnable {
 			javax.swing.SwingUtilities.invokeAndWait(new Runnable() {
 
 				public void run() {
-					pcb.setResult(solutions);
-					pcb.beginBlokNr(999);
+					System.out.println("SOLUTIONS ==" + solutions.size());
+					if(solutions.size() != 0){
+						pcb.setResult(solutions);
+						pcb.beginBlokNr(999);				
+					}
 				}
 			});
 		} catch (
