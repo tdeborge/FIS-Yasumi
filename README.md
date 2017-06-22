@@ -1,3 +1,13 @@
+# IMPORTANT
+
+---
+
+This site is not maintained anymore ... please visie
+
+[[https://github.com/RedHatWorkshops/FIS-Demo-Workshop-Yasumi|https://github.com/RedHatWorkshops/FIS-Demo-Workshop-Yasumi]]
+
+---
+
 # FIS-Yasumi
 
 ![alt text](https://github.com/tdeborge/FIS-Yasumi/blob/master/src/site/images/pieces.png "Introduction puzzle box")
